@@ -57,6 +57,7 @@ class ShapeLinkPlugin(abc.ABC):
         self.image_shape_len = 2
         self.reg_features = EventData()
         self.registered = False
+        self._call = 'first'
 
     def after_register(self):
         """Called after registration with Shape-In is complete"""
@@ -65,6 +66,8 @@ class ShapeLinkPlugin(abc.ABC):
     def after_transmission(self):
         """Called after Shape-In ends data transmission"""
 
+
+    @profile
     def handle_messages(self):
         """Handle messages from Shape-In
 
@@ -72,13 +75,26 @@ class ShapeLinkPlugin(abc.ABC):
         :func:`ShapeLinkPlugin.handle_event` for your customized plugins.
         """
         # read first byte
-        try:
-            # get message from socket
-            rcv = QtCore.QByteArray(self.socket.recv())
-        except zmq.error.ZMQError:
-            if self.verbose:
-                print(" ZMQ Error - timed out")
-            return
+        if self._call == 'first':
+            try:
+                # get message from socket
+                message = self.socket.recv()
+                rcv = QtCore.QByteArray(message)
+            except zmq.error.ZMQError:
+                if self.verbose:
+                    print(" ZMQ Error - timed out")
+                return
+            self._call = 'not_first'
+        else:
+            try:
+                # get message from socket
+                message = self.socket.recv()
+                rcv = QtCore.QByteArray(message)
+            except zmq.error.ZMQError:
+                if self.verbose:
+                    print(" ZMQ Error - timed out")
+                return
+
         rcv_stream = QtCore.QDataStream(rcv, QtCore.QIODevice.ReadOnly)
         r = rcv_stream.readInt64()
 
