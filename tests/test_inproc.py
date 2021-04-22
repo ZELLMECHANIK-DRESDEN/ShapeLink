@@ -14,11 +14,12 @@ class ChooseFeaturesShapeLinkPlugin(ShapeLinkPlugin):
         super(ChooseFeaturesShapeLinkPlugin, self).__init__(*args, **kwargs)
 
     def choose_features(self):
-        return ["time"]
+        return ["time", "image"]
 
     def handle_event(self, event_data: EventData) -> bool:
         """Check that the chosen features were transferred"""
         assert self.reg_features.scalars == ["time"]
+        assert self.reg_features.images == ["image"]
         return False
 
 
@@ -27,10 +28,10 @@ def test_run_plugin_with_user_defined_features():
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
-                                None, "tcp://localhost:6667", 0)
+                                None, "inproc://t", 0)
                           )
     # setup plugin
-    p = ChooseFeaturesShapeLinkPlugin(bind_to='tcp://*:6667')
+    p = ChooseFeaturesShapeLinkPlugin(bind_to='inproc://t')
     # start simulator
     th.start()
     # start plugin
