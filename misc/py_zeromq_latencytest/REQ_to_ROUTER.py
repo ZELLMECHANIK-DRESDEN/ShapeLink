@@ -20,15 +20,15 @@ def worker_routine(worker_url, context=None):
 
     while True:
 
-        string  = socket.recv()
+        string = socket.recv()
 
         print("Received request: [ %s ]" % (string))
 
         # do some 'work'
-        time.sleep(1)
+        # time.sleep(1)
 
         #send reply back to client
-        socket.send(b"World")
+        socket.send(b"&")
 
 
 def main():

@@ -5,7 +5,7 @@ import time
 context = zmq.Context.instance()
 socket = context.socket(zmq.REQ)
 
-socket.connect("tcp://localhost:8888")
+socket.connect("tcp://localhost:6667")
 # socket.connect("ipc://test")
 
 # initalize variables, otherwise first time measurement is too long

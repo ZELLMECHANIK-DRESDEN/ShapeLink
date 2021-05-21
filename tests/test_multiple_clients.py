@@ -1,5 +1,6 @@
 import pathlib
 import threading
+import re
 
 from shapelink import shapein_simulator
 from shapelink import ShapeLinkPlugin
@@ -16,26 +17,23 @@ class ExampleShapeLinkPlugin(ShapeLinkPlugin):
         return False
 
 
-def test_run_plugin_with_random_port(random_port=True):
-    # setup plugin
-    p = ExampleShapeLinkPlugin(random_port=random_port)
-    port_address = p.port_address
+def test_run_plugin_with_simulator():
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
                                 ["deform", "area_um"],
-                                "tcp://localhost:{}".format(port_address), 0)
+                                "tcp://localhost:6666", 0)
                           )
+    th = threading.Thread(target=shapein_simulator.start_simulator,
+                          args=(str(data_dir / "calibration_beads_47.rtdc"),
+                                ["deform", "area_um"],
+                                "tcp://localhost:6666", 0)
+                          )
+    # setup plugin
+    p = ExampleShapeLinkPlugin(bind_to='tcp://*:6666')
     # start simulator
     th.start()
     # start plugin
     for ii in range(49):
         p.handle_messages()
-
-
-if __name__ == "__main__":
-    # Run all tests
-    loc = locals()
-    for key in list(loc.keys()):
-        if key.startswith("test_") and hasattr(loc[key], "__call__"):
-            loc[key]()
+    th.join()
