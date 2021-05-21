@@ -62,21 +62,44 @@ class MultipleImageTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
         return False
 
 
-@profile
 def test_feature_transfer_speed_single_scalar():
+    """ Speed of tests with Eoghan's laptop on different battery options
+    each value is per hit (average) not including the first tranfser.
+    HP :  0.52 ms
+    Cst : 0.79 ms
+    Bal : 2.83 ms
+    """
     run_plugin_feature_transfer(SingleScalarTransferSpeedShapeLinkPlugin)
 
 
-# def test_feature_transfer_speed_multiple_scalar():
-#     run_plugin_feature_transfer(MultipleScalarTransferSpeedShapeLinkPlugin)
-#
-#
-# def test_feature_transfer_speed_single_image():
-#     run_plugin_feature_transfer(SingleImageTransferSpeedShapeLinkPlugin)
-#
-#
-# def test_feature_transfer_speed_multiple_image():
-#     run_plugin_feature_transfer(MultipleImageTransferSpeedShapeLinkPlugin)
+def test_feature_transfer_speed_multiple_scalar():
+    """ Speed of tests with Eoghan's laptop on different battery options
+    each value is per hit (average) not including the first tranfser.
+    HP :  4.13 ms
+    Cst : 5.85 ms
+    Bal : 19.27 ms
+    """
+    run_plugin_feature_transfer(MultipleScalarTransferSpeedShapeLinkPlugin)
+
+
+def test_feature_transfer_speed_single_image():
+    """ Speed of tests with Eoghan's laptop on different battery options
+    each value is per hit (average) not including the first tranfser.
+    HP :  3.39 ms
+    Cst : 4.99 ms
+    Bal : 14.56 ms
+    """
+    run_plugin_feature_transfer(SingleImageTransferSpeedShapeLinkPlugin)
+
+
+def test_feature_transfer_speed_multiple_image():
+    """ Speed of tests with Eoghan's laptop on different battery options
+    each value is per hit (average) not including the first tranfser.
+    HP :  5.03 ms
+    Cst : 7.08 ms
+    Bal : 20.99 ms
+    """
+    run_plugin_feature_transfer(MultipleImageTransferSpeedShapeLinkPlugin)
 
 
 if __name__ == "__main__":
