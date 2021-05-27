@@ -5,17 +5,17 @@ import time
 from random import randint
 
 
-
 def tprint(msg):
     """like print, but won't get newlines confused with multiple threads"""
     sys.stdout.write(msg + '\n')
     sys.stdout.flush()
 
+
 class ClientTask(threading.Thread):
     """ClientTask"""
     def __init__(self, id):
         self.id = id
-        threading.Thread.__init__ (self)
+        threading.Thread.__init__(self)
         self.counter = 0
         self.time_sum = 0
         self.time1 = 0.0
@@ -55,10 +55,11 @@ class ClientTask(threading.Thread):
         socket.close()
         context.term()
 
+
 class ServerTask(threading.Thread):
     """ServerTask"""
     def __init__(self):
-        threading.Thread.__init__ (self)
+        threading.Thread.__init__(self)
 
     def run(self):
         context = zmq.Context()
@@ -80,10 +81,11 @@ class ServerTask(threading.Thread):
         backend.close()
         context.term()
 
+
 class ServerWorker(threading.Thread):
     """ServerWorker"""
     def __init__(self, context):
-        threading.Thread.__init__ (self)
+        threading.Thread.__init__(self)
         self.context = context
 
     def run(self):
@@ -93,9 +95,9 @@ class ServerWorker(threading.Thread):
         while True:
             ident, msg = worker.recv_multipart()
             # tprint('Worker received %s from %s' % (msg, ident))
-            replies = randint(0,4)
+            replies = randint(0, 4)
             for i in range(replies):
-            #     time.sleep(1. / (randint(1,10)))
+                # time.sleep(1. / (randint(1,10)))
                 worker.send_multipart([ident, msg])
 
         worker.close()

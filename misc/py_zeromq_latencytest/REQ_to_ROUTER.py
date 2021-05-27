@@ -5,7 +5,6 @@
    Author: Guillaume Aubert (gaubert) <guillaume(dot)aubert(at)gmail(dot)com>
 
 """
-import time
 import threading
 import zmq
 
@@ -22,12 +21,12 @@ def worker_routine(worker_url, context=None):
 
         string = socket.recv()
 
-        print("Received request: [ %s ]" % (string))
+        print("Received request: [ %s ]" % string)
 
         # do some 'work'
         # time.sleep(1)
 
-        #send reply back to client
+        # send reply back to client
         socket.send(b"&")
 
 
