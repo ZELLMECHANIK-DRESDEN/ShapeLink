@@ -31,7 +31,6 @@ class ChooseFeaturesShapeLinkPlugin(ShapeLinkPlugin):
         return False
 
 
-@profile
 def test_run_plugin_with_user_defined_features():
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,

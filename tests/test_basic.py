@@ -16,7 +16,7 @@ class ExampleShapeLinkPlugin(ShapeLinkPlugin):
     def handle_event(self, event_data: EventData) -> bool:
         return False
 
-@profile
+
 def test_run_plugin_with_simulator():
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,

@@ -66,8 +66,6 @@ class ShapeLinkPlugin(abc.ABC):
     def after_transmission(self):
         """Called after Shape-In ends data transmission"""
 
-
-    @profile
     def handle_messages(self):
         """Handle messages from Shape-In
 

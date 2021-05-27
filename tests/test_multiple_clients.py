@@ -1,6 +1,5 @@
 import pathlib
 import threading
-import re
 
 from shapelink import shapein_simulator
 from shapelink import ShapeLinkPlugin
@@ -17,23 +16,25 @@ class ExampleShapeLinkPlugin(ShapeLinkPlugin):
         return False
 
 
-def test_run_plugin_with_simulator():
+def test_run_plugin_with_multiple_clients():
     # create new thread for simulator
-    th = threading.Thread(target=shapein_simulator.start_simulator,
-                          args=(str(data_dir / "calibration_beads_47.rtdc"),
-                                ["deform", "area_um"],
-                                "tcp://localhost:6666", 0)
-                          )
-    th = threading.Thread(target=shapein_simulator.start_simulator,
-                          args=(str(data_dir / "calibration_beads_47.rtdc"),
-                                ["deform", "area_um"],
-                                "tcp://localhost:6666", 0)
-                          )
+    th1 = threading.Thread(target=shapein_simulator.start_simulator,
+                           args=(str(data_dir / "calibration_beads_47.rtdc"),
+                                 ["deform", "area_um"],
+                                 "tcp://localhost:6666", 0)
+                           )
+    th2 = threading.Thread(target=shapein_simulator.start_simulator,
+                           args=(str(data_dir / "calibration_beads_47.rtdc"),
+                                 ["deform", "area_um"],
+                                 "tcp://localhost:6666", 0)
+                           )
     # setup plugin
     p = ExampleShapeLinkPlugin(bind_to='tcp://*:6666')
     # start simulator
-    th.start()
+    th1.start()
+    th2.start()
     # start plugin
     for ii in range(49):
         p.handle_messages()
-    th.join()
+    th1.join()
+    th2.join()
