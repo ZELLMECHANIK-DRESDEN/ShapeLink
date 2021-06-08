@@ -28,7 +28,7 @@ One can run the benchmarking tests locally with
 
 ::
 
-    pip install pytest-benchmark
+    pip install -r tests/benchmarking_tests/requirements.txt
     pytest tests/benchmarking_tests
 
 To create a local benchmark file (with which you can compare further tests),
@@ -46,8 +46,26 @@ Then, when you need to make sure new changes aren't regressing Shape-Link, use
 
 ::
 
-   pytest tests/benchmarking_tests --benchmark-compare="*/0001_eoghan_190321_WINpy38" --benchmark-compare-fail=median:5%
+    pytest tests/benchmarking_tests --benchmark-compare="*/0001_eoghan_190321_WINpy38" --benchmark-compare-fail=median:5%
 
+
+Feature transfer speeds
+.......................
+
+You can output plots that compare benchmark tests.
+They show how long each feature transfer takes in milliseconds.
+This is helpful for understanding how fast each feature can be transferred
+during acquisition.
+
+
+::
+
+    python tests\benchmarking_tests\benchmark_utils.py
+
+.. image:: images/benchmark_comparison_local_median.png
+   :alt: A plot comparison several benchmark tests.
+
+These plots will be saved locally in the same directory.
 
 
 Adding a new Benchmark for Github Actions
@@ -70,9 +88,11 @@ Actions, follow the steps below:
    benchmarking tests passed, open the "Benchmark with pytest-benchmark"
    output.
 2. Under the "===== passed =====" log, copy the contents of the `output.json`
-   file and paste in a new `.json` file in your local repo in the
+   file. Do not copy the ZMQ errors.
+   Paste in a new `.json` file in your local repo in the
    `./.benchmarks/actions_benchmarks` folder. This file should be named
-   as e.g., `ActionsBenchmark_190321_UBUNTUpy38.json`
+   similar to: `ActionsBenchmark_190321_UBUNTUpy38.json`, where the date should
+   change (ddmmyy).
 3. Open the `./.github/workflows/checks.yml` file and replace the name of the
    --benchmark-compare="actions_benchmarks/ActionsBenchmark_190321_ubuntu_py38"
    to the name of your file.
