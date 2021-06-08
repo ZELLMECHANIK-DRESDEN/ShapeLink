@@ -32,7 +32,7 @@ jobs:
         pip freeze
     - name: Benchmark with pytest-benchmark
       run: |
-        pytest tests/benchmarking_tests --benchmark-sort="name" --benchmark-storage=".benchmarks_github_actions" --benchmark-json="output.json" --benchmark-compare="*/ActionsBenchmark_21-06-08_UBUNTUpy38" --benchmark-compare-fail=median:5%
+        pytest tests/benchmarking_tests --benchmark-sort="name" --benchmark-storage=".benchmarks_github_actions" --benchmark-json="output.json" --benchmark-compare="*/ActionsBenchmark_21-06-08_UBUNTUpy38" --benchmark-compare-fail=median:10%
         cat output.json
     - name: Test with pytest
       run: |
