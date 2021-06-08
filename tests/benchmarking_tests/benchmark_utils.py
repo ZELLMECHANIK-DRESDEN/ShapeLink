@@ -27,6 +27,7 @@ def parse_benchmark_json(json_paths, stat='median', verbose=False):
     """Get the value of a stat for each benchmark in ms (millisecond)"""
     stat_data = {}
     for json_path in json_paths:
+        json_path_dir = pathlib.Path(json_path)
         with open(json_path, "r") as json_file:
             json_content = json.load(json_file)
             n_test_dict = {}
@@ -35,13 +36,14 @@ def parse_benchmark_json(json_paths, stat='median', verbose=False):
                 per_hit = n_test["stats"][stat] / 49 * 1000
                 n_test_name = n_test['name']
                 if verbose:
-                    print(f"{n_test_name} : {per_hit:.3f} ms")
+                    print(f"{json_path_dir.name}::{n_test_name} : "
+                          f"{per_hit:.3f} ms")
                 n_test_dict[n_test_name[25:]] = per_hit
         stat_data[json_path.split('\\')[-1]] = n_test_dict
     return stat_data
 
 
-def plot_benchmark_statistics(local=True, stat='median'):
+def plot_benchmark_statistics(local=True, stat='median', verbose=True):
     """Visualise the json benchmark statistics"""
     local_paths, ghactions_paths = _get_benchmark_paths()
     if local:
@@ -50,7 +52,7 @@ def plot_benchmark_statistics(local=True, stat='median'):
     else:
         json_paths = ghactions_paths
         save_name = "gh-actions"
-    stat_data = parse_benchmark_json(json_paths, stat)
+    stat_data = parse_benchmark_json(json_paths, stat, verbose=verbose)
     df = pd.DataFrame.from_dict(stat_data)
     df.plot(figsize=(15, 9), kind='bar', rot=15, fontsize=16)
     plt.ylabel("Transfer Speed per hit (ms)", fontsize=24)
