@@ -132,3 +132,6 @@ _version_save.py
 
 # pytest-benchmark default folder
 .benchmarks/
+
+# benchmark_util.py output pngs
+tests/benchmarking_tests/*.png
