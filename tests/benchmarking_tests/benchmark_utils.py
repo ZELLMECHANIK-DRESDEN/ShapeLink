@@ -7,7 +7,6 @@ import json
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 this_dir = pathlib.Path(__file__).parent
 bm_data_dir = this_dir / "../../.benchmarks*/**/*.json"
 
