@@ -13,6 +13,7 @@ bm_data_dir = this_dir / "../../.benchmarks*/**/*.json"
 
 
 def _get_benchmark_paths():
+    """Get the paths of the various benchmark json files"""
     data_dirs = glob(str(bm_data_dir), recursive=True)
     local_paths, ghactions_paths = [], []
     for path_name in data_dirs:
