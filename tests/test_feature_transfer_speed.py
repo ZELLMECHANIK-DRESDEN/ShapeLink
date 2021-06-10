@@ -26,6 +26,7 @@ def run_plugin_feature_transfer(shapelink_plugin, random_port=True):
 
 
 class SingleScalarTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
+    """Send a single scalar feature"""
     def choose_features(self):
         return ["circ"]
 
@@ -34,6 +35,7 @@ class SingleScalarTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
 
 
 class MultipleScalarTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
+    """Send multiple (five) scalar features"""
     def choose_features(self):
         user_feats = ['area_cvx', 'aspect', 'bright_avg',
                       'circ', 'deform']
@@ -44,6 +46,7 @@ class MultipleScalarTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
 
 
 class MultipleScalarTransferSpeedShapeLinkPlugin2(ShapeLinkPlugin):
+    """Send multiple (sixteen) scalar features"""
     def choose_features(self):
         user_feats = ['area_cvx', 'area_msd', 'area_ratio', 'area_um',
                       'aspect', 'bright_avg', 'bright_sd', 'circ',
@@ -56,6 +59,7 @@ class MultipleScalarTransferSpeedShapeLinkPlugin2(ShapeLinkPlugin):
 
 
 class SingleImageTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
+    """Send image feature"""
     def choose_features(self):
         return ["image"]
 
@@ -64,6 +68,7 @@ class SingleImageTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
 
 
 class MultipleImageTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
+    """Send image, mask, contour features"""
     def choose_features(self):
         user_feats = ["image", "mask", "contour"]
         return user_feats
@@ -73,6 +78,7 @@ class MultipleImageTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
 
 
 class AllAvailableFeaturesTransferSpeedShapeLinkPlugin(ShapeLinkPlugin):
+    """Send all available features"""
     def choose_features(self):
         return list()
 

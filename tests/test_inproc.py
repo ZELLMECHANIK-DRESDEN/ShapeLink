@@ -9,7 +9,7 @@ data_dir = pathlib.Path(__file__).parent / "data"
 
 
 class ChooseFeaturesShapeLinkPlugin(ShapeLinkPlugin):
-    """Checks if only the chosen features are transferred"""
+    """Simple plugin that checks if the correct features are transferred"""
     def __init__(self, *args, **kwargs):
         super(ChooseFeaturesShapeLinkPlugin, self).__init__(*args, **kwargs)
 
@@ -24,6 +24,7 @@ class ChooseFeaturesShapeLinkPlugin(ShapeLinkPlugin):
 
 
 def test_run_plugin_with_user_defined_features():
+    """Server and Client connected via inproc"""
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
