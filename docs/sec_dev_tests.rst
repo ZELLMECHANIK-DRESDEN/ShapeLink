@@ -63,7 +63,7 @@ during acquisition.
     python tests\benchmarking_tests\benchmark_utils.py
 
 .. image:: images/benchmark_comparison_local_median.png
-   :alt: A plot comparison several benchmark tests.
+   :alt: A plot comparing several benchmark tests.
 
 These plots will be saved locally in the same directory.
 
@@ -91,8 +91,8 @@ Actions, follow the steps below:
    file. Do not copy the ZMQ errors.
    Paste in a new `.json` file in your local repo in the
    `./.benchmarks/actions_benchmarks` folder. This file should be named
-   similar to: `ActionsBenchmark_190321_UBUNTUpy38.json`, where the date should
-   change (ddmmyy).
+   similar to: `ActionsBenchmark_21-03-19_UBUNTUpy38.json`, where the date should
+   change (yy-mm-dd).
 3. Open the `./.github/workflows/checks.yml` file and replace the name of the
    --benchmark-compare="actions_benchmarks/ActionsBenchmark_190321_ubuntu_py38"
    to the name of your file.
