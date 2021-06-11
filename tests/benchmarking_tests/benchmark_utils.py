@@ -2,25 +2,22 @@
 # General tools for viewing benchmark statistics
 
 import pathlib
-from glob import glob
 import json
 import matplotlib.pyplot as plt
 import pandas as pd
 
 this_dir = pathlib.Path(__file__).parent
-bm_data_dir = this_dir / "../../.benchmarks*/**/*.json"
 
 
 def _get_benchmark_paths():
     """Get the paths of the various benchmark json files"""
-    data_dirs = glob(str(bm_data_dir), recursive=True)
-    local_paths, ghactions_paths = [], []
-    for path_name in data_dirs:
-        if "github" in path_name:
-            ghactions_paths.append(path_name)
-        else:
-            local_paths.append(path_name)
-    return local_paths, ghactions_paths
+    local_paths, gh_actions_paths = [], []
+    for path in this_dir.parents[1].glob(".benchmarks*/**/*.json"):
+        if path.parent.is_dir() and "github" in str(path):
+            gh_actions_paths.append(path)
+        elif path.parent.is_dir():
+            local_paths.append(path)
+    return local_paths, gh_actions_paths
 
 
 def parse_benchmark_json(json_paths, stat='median', verbose=False):
@@ -28,7 +25,7 @@ def parse_benchmark_json(json_paths, stat='median', verbose=False):
     stat_data = {}
     for json_path in json_paths:
         json_path_dir = pathlib.Path(json_path)
-        with open(json_path, "r") as json_file:
+        with json_path.open() as json_file:
             json_content = json.load(json_file)
             n_test_dict = {}
             for n_test in json_content["benchmarks"]:
@@ -39,7 +36,7 @@ def parse_benchmark_json(json_paths, stat='median', verbose=False):
                     print(f"{json_path_dir.name}::{n_test_name} : "
                           f"{per_hit:.3f} ms")
                 n_test_dict[n_test_name[25:]] = per_hit
-        stat_data[json_path.split('\\')[-1]] = n_test_dict
+        stat_data[json_path.name] = n_test_dict
     return stat_data
 
 
@@ -57,8 +54,7 @@ def plot_benchmark_statistics(local=True, stat='median', verbose=True):
     df.plot(figsize=(15, 9), kind='bar', rot=15, fontsize=16)
     plt.ylabel("Transfer Speed per hit (ms)", fontsize=24)
     plt.legend(fontsize=16)
-    plt.savefig(f"{this_dir.resolve()}/"
-                f"benchmark_comparison_{save_name}_{stat}.png")
+    plt.savefig(this_dir / f"benchmark_comparison_{save_name}_{stat}.png")
 
 
 if __name__ == "__main__":
