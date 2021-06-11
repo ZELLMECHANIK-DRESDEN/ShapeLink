@@ -57,7 +57,7 @@ class ShapeLinkPlugin(abc.ABC):
         self.image_shape_len = 2
         self.reg_features = EventData()
         self.registered = False
-        self._call = 'first'
+        self._first_call = True
 
     def after_register(self):
         """Called after registration with Shape-In is complete"""
@@ -73,7 +73,7 @@ class ShapeLinkPlugin(abc.ABC):
         :func:`ShapeLinkPlugin.handle_event` for your customized plugins.
         """
         # read first byte
-        if self._call == 'first':
+        if self._first_call:
             try:
                 # get message from socket
                 message = self.socket.recv()
@@ -82,7 +82,7 @@ class ShapeLinkPlugin(abc.ABC):
                 if self.verbose:
                     print(" ZMQ Error - timed out")
                 return
-            self._call = 'not_first'
+            self._first_call = False
         else:
             try:
                 # get message from socket
