@@ -48,7 +48,7 @@ Then, when you need to make sure new changes aren't regressing Shape-Link, use
 
 ::
 
-    pytest tests/benchmarking_tests --benchmark-compare="*/0001_eoghan_190321_WINpy38" --benchmark-compare-fail=median:5%
+    pytest tests/benchmarking_tests --benchmark-compare="*/0001_eoghan_21-03-19_WINpy38" --benchmark-compare-fail=median:5%
 
 
 .. _sec_feature_transfer_plot:
