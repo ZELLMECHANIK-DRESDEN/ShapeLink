@@ -73,7 +73,7 @@ class ShapeLinkPlugin(abc.ABC):
         :func:`ShapeLinkPlugin.handle_event` for your customized plugins.
         """
         # read first byte
-        if self._first_call:
+        if self._first_call:  # needed for accurate line_profiler tests
             try:
                 # get message from socket
                 message = self.socket.recv()
