@@ -1,4 +1,5 @@
 0.2.1
+ - test: speed tests and benchmarking for features, new benchmarking tools and docs guide
  - test: added image and scalar choose feature tests, verbose tests
  - fix: contour shape is now correctly reshaped by the plugin. The image
    features are now not repeatedly reshaped.
