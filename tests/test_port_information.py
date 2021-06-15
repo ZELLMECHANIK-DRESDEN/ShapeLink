@@ -1,5 +1,9 @@
 import pathlib
 
+import random
+import time
+import zmq
+
 from shapelink import ShapeLinkPlugin
 from shapelink.shapelink_plugin import EventData
 
@@ -15,10 +19,17 @@ class ExampleShapeLinkPlugin(ShapeLinkPlugin):
 
 
 def test_default_port_and_IP(random_port=False):
-    # setup plugin
-    p = ExampleShapeLinkPlugin(random_port=random_port)
-    assert p.port_address == "6666"
-    assert p.ip_address == "tcp://*"
+    # Because the CI runs four systems simultaneously, we need to wait for
+    # this port to be available before connecting.
+    for i in range(10):
+        try:
+            p = ExampleShapeLinkPlugin(random_port=random_port)
+            assert p.port_address == "6666"
+            assert p.ip_address == "tcp://*"
+        except zmq.error.ZMQError:
+            time.sleep(random.randint(1, 5))
+        else:
+            break
 
 
 def test_random_IP(random_port=True):

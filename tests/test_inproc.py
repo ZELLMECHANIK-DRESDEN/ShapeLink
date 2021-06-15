@@ -8,24 +8,30 @@ from shapelink.shapelink_plugin import EventData
 data_dir = pathlib.Path(__file__).parent / "data"
 
 
-class ExampleShapeLinkPlugin(ShapeLinkPlugin):
+class ChooseFeaturesShapeLinkPlugin(ShapeLinkPlugin):
+    """Simple plugin that checks if the correct features are transferred"""
+    def __init__(self, *args, **kwargs):
+        super(ChooseFeaturesShapeLinkPlugin, self).__init__(*args, **kwargs)
+
     def choose_features(self):
-        return list()
+        return ["time", "image"]
 
     def handle_event(self, event_data: EventData) -> bool:
+        """Check that the chosen features were transferred"""
+        assert self.reg_features.scalars == ["time"]
+        assert self.reg_features.images == ["image"]
         return False
 
 
-def test_run_plugin_with_random_port(random_port=True):
-    # setup plugin
-    p = ExampleShapeLinkPlugin(random_port=random_port)
-    port_address = p.port_address
+def test_run_plugin_with_user_defined_features():
+    """Server and Client connected via inproc"""
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
-                                ["deform", "area_um"],
-                                "tcp://localhost:{}".format(port_address), 0)
+                                None, "inproc://t", 0)
                           )
+    # setup plugin
+    p = ChooseFeaturesShapeLinkPlugin(bind_to='inproc://t')
     # start simulator
     th.start()
     # start plugin
