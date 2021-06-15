@@ -38,7 +38,7 @@ class AutofocusFakePlugin(ShapeLinkPlugin):
         # retrieve the hologram image
         # here is just an example, as our rtdc file does
         # not have a hologram, so we use a fake dataset (see above)
-        should_be_the_hologram = event_data.images[0]
+        event_data.images[0]  # should be the hologram
 
         # create some fake noise
         noise = np.random.rand(img_crop.shape[-1], img_crop.shape[-2])
