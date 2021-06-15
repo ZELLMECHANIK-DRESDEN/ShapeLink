@@ -55,7 +55,7 @@ def test_run_plugin_with_user_defined_trace_features():
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
-                                None, "tcp://localhost:6668", 0)
+                                None, "tcp://localhost:6669", 0)
                           )
 
     # open and crop hologram image
@@ -65,7 +65,7 @@ def test_run_plugin_with_user_defined_trace_features():
 
     # setup plugin
     p = AutofocusHologramFakeShapeLinkPlugin(
-        bind_to='tcp://*:6668', hologram=img_crop)
+        bind_to='tcp://*:6669', hologram=img_crop)
     # start simulator
     th.start()
     # start plugin
