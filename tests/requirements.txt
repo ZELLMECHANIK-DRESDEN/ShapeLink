@@ -2,3 +2,6 @@ pytest
 opencv-python
 nrefocus
 qpimage
+pytest-benchmark
+pandas
+matplotlib
