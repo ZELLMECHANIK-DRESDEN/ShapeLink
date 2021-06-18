@@ -1,7 +1,21 @@
 
+.. _sec_developers:
+
 ==========================
 Information for Developers
 ==========================
+
+Plug-ins
+--------
+You may need to install extra dependencies for some plug-ins,
+such as the autofocus plugin.
+
+::
+
+    pip install -r tests/requirements.txt
+
+To write plug-ins, see the :ref:`Writing Plug-ins <sec_writing_plugins>` section.
+To run plugins, see the :ref:`Command-line interface <sec_cli>` section.
 
 
 Testing

@@ -1,3 +1,6 @@
+
+.. _sec_writing_plugins:
+
 ================
 Writing Plug-ins
 ================
