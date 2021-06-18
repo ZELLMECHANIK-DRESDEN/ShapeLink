@@ -30,7 +30,7 @@ Running tests
     pytest tests
 
 More information on running tests and benchmarking can be found
-`here <https://shapelink.readthedocs.io/en/stable/sec_dev_tests.html>`__.
+`here <https://shapelink.readthedocs.io/en/latest/sec_dev_tests.html>`__.
 
 
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/shapelink.svg
