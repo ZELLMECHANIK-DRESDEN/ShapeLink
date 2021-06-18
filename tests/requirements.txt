@@ -1,5 +1,5 @@
 pytest
-opencv-python
+opencv-python-headless
 nrefocus
 qpimage
 pytest-benchmark
