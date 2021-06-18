@@ -17,7 +17,7 @@ img_crop = img[300:500, 100:300]
 
 
 class AutofocusFakePlugin(ShapeLinkPlugin):
-    """Displays a rolling mean of a few scalar features"""
+    """Display the defocus calculated from a hologram"""
     def __init__(self, *args, **kwargs):
         super(AutofocusFakePlugin, self).__init__(*args, **kwargs)
 
