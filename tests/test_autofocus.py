@@ -11,10 +11,14 @@ from shapelink import ShapeLinkPlugin
 from shapelink.shapelink_plugin import EventData
 
 data_dir = pathlib.Path(__file__).parent / "data"
+# open and crop hologram image
+holo_im = data_dir / "hologram_cell_curved_bg.jpg"
+img = cv2.imread(str(holo_im), cv2.IMREAD_GRAYSCALE)
+img_crop = img[300:500, 100:300]
 
 
 class AutofocusHologramFakeShapeLinkPlugin(ShapeLinkPlugin):
-    """All FLUOR_TRACES are transferred because "trace" is provided"""
+    """A guiding plugin for autofocussing with a hologram"""
     def __init__(self, hologram, *args, **kwargs):
         super(AutofocusHologramFakeShapeLinkPlugin, self).__init__(
             *args, **kwargs)
@@ -34,39 +38,34 @@ class AutofocusHologramFakeShapeLinkPlugin(ShapeLinkPlugin):
         event_data.images[0]  # should be the hologram
 
         # use qpimage to process the hologram
-        qpi = qpimage.QPImage(data=self.hologram,
-                              which_data="hologram")
+        qpi = qpimage.QPImage(data=self.hologram, which_data="hologram")
         field = qpi.field
 
         # example nrefocus parameters
-        focus_range = (30, 35)
-        pixel_size = 0.34
-        light_wavelength = 0.532
+        focus_range = (30e-6, 35e-6)
+        pixel_size = 0.34e-6
+        light_wavelength = 532e-9
+        default_focus = 0
         # use nrefocus to calculate autofocus
         afocus = nrefocus.RefocusNumpy(
-            field, light_wavelength, pixel_size)
+            field, light_wavelength, pixel_size, distance=default_focus)
         focus_distance = afocus.autofocus(focus_range)
 
-        assert np.isclose(focus_distance, 33.086177092746745)
+        assert np.isclose(focus_distance, 3.3086177092746745e-05)
 
         return False
 
 
-def test_run_plugin_with_user_defined_trace_features():
+def test_run_plugin_with_user_defined_trace_features(hologram=img_crop):
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
                                 None, "tcp://localhost:6669", 0)
                           )
 
-    # open and crop hologram image
-    holo_im = data_dir / "hologram_cell_curved_bg.jpg"
-    img = cv2.imread(str(holo_im), cv2.IMREAD_GRAYSCALE)
-    img_crop = img[300:500, 100:300]
-
     # setup plugin
     p = AutofocusHologramFakeShapeLinkPlugin(
-        bind_to='tcp://*:6669', hologram=img_crop)
+        bind_to='tcp://*:6669', hologram=hologram)
     # start simulator
     th.start()
     # start plugin
@@ -74,7 +73,7 @@ def test_run_plugin_with_user_defined_trace_features():
         p.handle_messages()
 
 
-def test_defocus_and_find_correct_focus():
+def test_calculate_focus_after_propagation():
     # open jpg
     holo_im = data_dir / "hologram_cell_curved_bg.jpg"
     img = cv2.imread(str(holo_im), cv2.IMREAD_GRAYSCALE)
