@@ -29,7 +29,9 @@ class AutofocusFakePlugin(ShapeLinkPlugin):
 
     def choose_features(self):
         feats = ["image"]
-        # image will simulate the time take for a hologram
+        # We are using img_crop in this plugin, but we still would like
+        # Shape-In to send us something to simulate our workflow.
+        # This is why this is a "fake" plugin.
         return feats
 
     def handle_event(self, event_data):
@@ -48,12 +50,13 @@ class AutofocusFakePlugin(ShapeLinkPlugin):
         field = qpi.field
 
         # example nrefocus parameters
-        focus_range = (30, 35)
-        pixel_size = 0.34
-        light_wavelength = 0.532
+        # would be faster if this interval was smaller, see the tests
+        focus_range = (20e-6, 30e-6)
+        pixel_size = 0.34e-6
+        light_wavelength = 532e-9
         # use nrefocus to calculate autofocus
-        afocus = nrefocus.RefocusNumpy(
-            field, light_wavelength, pixel_size)
+        afocus = nrefocus.RefocusPyFFTW(
+            field, light_wavelength, pixel_size, padding=False)
         focus_distance = afocus.autofocus(focus_range)
 
         # send to objective the absolute focus value
