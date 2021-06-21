@@ -1,6 +1,6 @@
 pytest
 opencv-python-headless
-nrefocus
+nrefocus[FFTW]
 qpimage
 pytest-benchmark
 pandas

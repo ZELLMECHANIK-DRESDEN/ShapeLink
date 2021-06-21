@@ -19,14 +19,17 @@ img_crop = img[300:500, 100:300]
 
 class AutofocusHologramFakeShapeLinkPlugin(ShapeLinkPlugin):
     """A guiding plugin for autofocussing with a hologram"""
-    def __init__(self, hologram, *args, **kwargs):
+    def __init__(self, hologram, coarse_search, *args, **kwargs):
         super(AutofocusHologramFakeShapeLinkPlugin, self).__init__(
             *args, **kwargs)
         self.hologram = hologram
+        self.coarse_search = coarse_search
 
     def choose_features(self):
         feats = ["image"]
-        # image will simulate the time take for a hologram
+        # We are using img_crop in this plugin, but we still would like
+        # Shape-In to send us something to simulate our workflow.
+        # This is why this is a "fake" plugin.
         return feats
 
     def handle_event(self, event_data: EventData) -> bool:
@@ -42,21 +45,26 @@ class AutofocusHologramFakeShapeLinkPlugin(ShapeLinkPlugin):
         field = qpi.field
 
         # example nrefocus parameters
-        focus_range = (30e-6, 35e-6)
+        if self.coarse_search:
+            focus_range = (20.0e-6, 30.0e-6)
+        else:
+            focus_range = (26.0e-6, 26.3e-6)
         pixel_size = 0.34e-6
         light_wavelength = 532e-9
         default_focus = 0
         # use nrefocus to calculate autofocus
-        afocus = nrefocus.RefocusNumpy(
-            field, light_wavelength, pixel_size, distance=default_focus)
+        afocus = nrefocus.RefocusPyFFTW(
+            field, light_wavelength, pixel_size,
+            distance=default_focus, padding=False)
         focus_distance = afocus.autofocus(focus_range)
 
-        assert np.isclose(focus_distance, 3.3086177092746745e-05)
+        assert np.isclose(focus_distance, 2.61756e-05)
 
         return False
 
 
-def test_run_plugin_with_user_defined_trace_features(hologram=img_crop):
+def test_autofocus_fake_hologram_coarse(hologram=img_crop,
+                                        coarse_search=True):
     # create new thread for simulator
     th = threading.Thread(target=shapein_simulator.start_simulator,
                           args=(str(data_dir / "calibration_beads_47.rtdc"),
@@ -65,7 +73,27 @@ def test_run_plugin_with_user_defined_trace_features(hologram=img_crop):
 
     # setup plugin
     p = AutofocusHologramFakeShapeLinkPlugin(
-        bind_to='tcp://*:6669', hologram=hologram)
+        bind_to='tcp://*:6669', hologram=hologram,
+        coarse_search=coarse_search)
+    # start simulator
+    th.start()
+    # start plugin
+    for ii in range(49):
+        p.handle_messages()
+
+
+def test_autofocus_fake_hologram_no_coarse(hologram=img_crop,
+                                           coarse_search=False):
+    # create new thread for simulator
+    th = threading.Thread(target=shapein_simulator.start_simulator,
+                          args=(str(data_dir / "calibration_beads_47.rtdc"),
+                                None, "tcp://localhost:6669", 0)
+                          )
+
+    # setup plugin
+    p = AutofocusHologramFakeShapeLinkPlugin(
+        bind_to='tcp://*:6669', hologram=hologram,
+        coarse_search=coarse_search)
     # start simulator
     th.start()
     # start plugin
@@ -74,27 +102,26 @@ def test_run_plugin_with_user_defined_trace_features(hologram=img_crop):
 
 
 def test_calculate_focus_after_propagation():
-    # open jpg
-    holo_im = data_dir / "hologram_cell_curved_bg.jpg"
-    img = cv2.imread(str(holo_im), cv2.IMREAD_GRAYSCALE)
-    img_crop = img[300:500, 100:300]
-
     # defocus image
     qpi = qpimage.QPImage(data=img_crop,
                           which_data="hologram")
     field = qpi.field
-    focus_range = (0, 40e-6)
+    focus_range = (0, 30e-6)
     pixel_size = 0.34e-6
     light_wavelength = 532e-9
     initial_distance = 0.0
-    afocus = nrefocus.RefocusNumpy(
-        field, light_wavelength, pixel_size, distance=initial_distance)
-    focus1 = afocus.autofocus(focus_range)
-    assert np.isclose(focus1, 3.3086177092746745e-05)
+    # padding must be False for reproducible defocus values between
+    # the first and second autofocus
+    padding = False
+    afocus1 = nrefocus.RefocusPyFFTW(
+        field, light_wavelength, pixel_size,
+        distance=initial_distance, padding=padding)
+    focus1 = afocus1.autofocus(focus_range)
+    assert np.isclose(focus1, 2.61756e-05)
 
     # move it by 10e-6
-    prop_val = 10e-6
-    prop_field = afocus.propagate(prop_val)
+    prop_val = 20e-6
+    prop_field = afocus1.propagate(prop_val)
 
     # save in temp file
     tpath = pathlib.Path(tempfile.mkdtemp())
@@ -105,14 +132,20 @@ def test_calculate_focus_after_propagation():
         prop_loaded = np.load(str(expath))
         qpi2 = qpimage.QPImage(data=prop_loaded, which_data="field")
         field2 = qpi2.field
-        afocus2 = nrefocus.RefocusNumpy(
-            field2, light_wavelength, pixel_size, distance=prop_val)
-        # find focus of defocused image
+        afocus2 = nrefocus.RefocusPyFFTW(
+            field2, light_wavelength, pixel_size,
+            distance=prop_val, padding=padding)
         focus2 = afocus2.autofocus(focus_range)
-        # focus2 is different to focus1 for some reason.
-        # Reported in github.com/RI-imaging/nrefocus/issues/13
-        assert np.isclose(focus2, 3.060066446129425e-05)
-        assert not np.isclose(focus1, focus2)
+        assert np.isclose(focus2, 2.61756e-05)
+        assert np.isclose(focus1, focus2)
+
+        # show that for a distance of zero, the focus is shifted by prop_val
+        afocus3 = nrefocus.RefocusPyFFTW(
+            field2, light_wavelength, pixel_size,
+            distance=0, padding=padding)
+        focus3 = afocus3.autofocus(focus_range)
+        assert np.isclose(focus3, 0.61756e-05)
+        assert np.isclose(focus3, focus1-prop_val)
 
 
 if __name__ == "__main__":
